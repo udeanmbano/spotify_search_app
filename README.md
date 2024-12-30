@@ -27,11 +27,11 @@ Here’s a simplified version of the **Instructions to Run the App** without any
 4. **Run the App**:
     - For iOS (macOS only):
       ```bash
-      flutter run -d ios
+      flutter run or flutter run -d ios
       ```
     - For Android:
       ```bash
-      flutter run -d android
+      flutter run or flutter run -d android
       ```
 
 5. **Run on a Physical Device**:

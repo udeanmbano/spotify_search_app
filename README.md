@@ -1,5 +1,49 @@
 # spotify_search_app
 
+## Instructions to Run App
+Here’s a simplified version of the **Instructions to Run the App** without any setup or configuration details, just the steps to run the app directly:
+
+---
+
+### **Instructions to Run the App**
+
+1. **Clone the Repository**:
+   Open your terminal and clone the project repository:
+   ```bash
+   git clone https://your-repository-url.git
+   ```
+
+2. **Navigate to the Project Directory**:
+   ```bash
+   cd <project-directory>
+   ```
+
+3. **Install Dependencies**:
+   Run the following command to fetch the necessary packages:
+   ```bash
+   flutter pub get
+   ```
+
+4. **Run the App**:
+    - For iOS (macOS only):
+      ```bash
+      flutter run -d ios
+      ```
+    - For Android:
+      ```bash
+      flutter run -d android
+      ```
+
+5. **Run on a Physical Device**:
+    - Connect your physical device to the computer.
+    - Run the app using:
+      ```bash
+      flutter run
+      ```
+
+---
+
+
 ## Suggestions 
 Using the Stacked Architecture (a popular architecture for Flutter apps) for your app improves its scalability, maintainability, and testability by introducing a well-structured and modular approach to development.
 

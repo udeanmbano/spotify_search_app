@@ -39,8 +39,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter # Provides the core Flutter testing framework
-  test: ^1.24.0 # For unit testing without Flutter-specific dependencies
-  mockito: ^5.4.0 # For mocking dependencies in tests
+  # The "flutter_lints" package below contains a set of recommended lints to
+  mockito: ^5.0.17
+  test: ^1.25.8
   build_runner: ^2.4.0
   freezed: ^2.3.0
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -55,7 +56,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+    - assets/credentials.json
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

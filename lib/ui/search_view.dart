@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:spotify_search_app/utilities/Common.dart';
 import 'package:stacked/stacked.dart';
+import '../shared/colors.dart';
+import '../shared/dimens.dart';
+import '../shared/strings.dart';
 import 'search_viewmodel.dart';
 
 class SearchView extends StatelessWidget {
@@ -11,129 +13,163 @@ class SearchView extends StatelessWidget {
       builder: (context, model, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Search',style: TextStyle(fontSize:28, fontWeight: FontWeight.bold)),
-            centerTitle: false, // Aligns the title to the left
+            title: const Text(
+              AppStrings.titleSearch,
+              style: TextStyle(
+                  fontSize: Dimens.fontSize28, fontWeight: FontWeight.bold),
+            ),
+            centerTitle: false,
           ),
           body: Padding(
-            padding: const EdgeInsets.fromLTRB(16.0,4.0,16.0,16.0),
-            child: SingleChildScrollView( // Makes content scrollable
+            padding: const EdgeInsets.fromLTRB(
+              Dimens.paddingHorizontal,
+              Dimens.paddingVertical,
+              Dimens.paddingHorizontal,
+              Dimens.mediumSpacing,
+            ),
+            child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Align to the left
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
                     decoration: InputDecoration(
-                      hintText: 'Artists, albums...',
-                      hintStyle: TextStyle(
-                        color: Common.hexToColor("#7F7F7F"), // Set your desired color for the hint text
-                      ),
-                      prefixIcon: Icon(Icons.search,color: Common.hexToColor("#7F7F7F")),
-                      filled: true, // Enables the background color
-                      fillColor: Common.hexToColor("#FFFFFF"), // Light grey background color
+                      hintText: AppStrings.hintSearch,
+                      hintStyle: const TextStyle(color: AppColors.hintText),
+                      prefixIcon:
+                          const Icon(Icons.search, color: AppColors.hintText),
+                      filled: true,
+                      fillColor: AppColors.fillColor,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Optional: Rounded corners
-                        borderSide: BorderSide.none, // Remove the border line
+                        borderRadius:
+                            BorderRadius.circular(Dimens.borderRadius),
+                        borderSide: BorderSide.none,
                       ),
                     ),
                     onChanged: (value) => model.search(value),
-                    style: TextStyle(color: Common.hexToColor("#7F7F7F")), // Text color
+                    style: const TextStyle(color: AppColors.hintText),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Dimens.mediumSpacing),
                   Row(
                     children: [
                       ChoiceChip(
-                        label: const Text('Albums'),
-                        selected: model.selectedType == 'album',
-                        onSelected: (_) => model.setSelectedType('album'),
+                        label: const Text(AppStrings.albumsLabel),
+                        selected:
+                            model.selectedType == AppStrings.selectedTypeAlbum,
+                        onSelected: (_) =>
+                            model.setSelectedType(AppStrings.selectedTypeAlbum),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(22),
+                          borderRadius:
+                              BorderRadius.circular(Dimens.chipBorderRadius),
                         ),
-                        selectedColor: Colors.green[800],
+                        selectedColor: AppColors.selectedChip,
                         backgroundColor: Colors.transparent,
                         labelStyle: TextStyle(
-                          color: model.selectedType == 'album' ? Colors.white : Colors.white,
+                          color:
+                              model.selectedType == AppStrings.selectedTypeAlbum
+                                  ? Colors.white
+                                  : Colors.white,
                         ),
-                        side: BorderSide(color: Common.hexToColor("#D3D3D3"), width: 0.5),
+                        side: const BorderSide(
+                            color: AppColors.chipBorder,
+                            width: Dimens.borderSideWidth),
                         showCheckmark: false,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: Dimens.smallSpacing),
                       ChoiceChip(
-                        label: const Text('Artists'),
-                        selected: model.selectedType == 'artist',
-                        onSelected: (_) => model.setSelectedType('artist'),
+                        label: const Text(AppStrings.artistsLabel),
+                        selected:
+                            model.selectedType == AppStrings.selectedTypeArtist,
+                        onSelected: (_) => model
+                            .setSelectedType(AppStrings.selectedTypeArtist),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(22),
+                          borderRadius:
+                              BorderRadius.circular(Dimens.chipBorderRadius),
                         ),
-                        selectedColor: Colors.green[800],
+                        selectedColor: AppColors.selectedChip,
                         backgroundColor: Colors.transparent,
                         labelStyle: TextStyle(
-                          color: model.selectedType == 'artist' ? Colors.white : Colors.white,
+                          color: model.selectedType ==
+                                  AppStrings.selectedTypeArtist
+                              ? Colors.white
+                              : Colors.white,
                         ),
-                        side: BorderSide(color: Colors.white, width: 0.5),
+                        side: const BorderSide(
+                            color: Colors.white, width: Dimens.borderSideWidth),
                         showCheckmark: false,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Dimens.mediumSpacing),
                   if (model.isBusy)
                     const Center(child: CircularProgressIndicator())
                   else if (model.results.isEmpty)
                     const Center(
                       child: Text(
-                        'No results',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        AppStrings.noResults,
+                        style: TextStyle(
+                            fontSize: Dimens.fontSize18,
+                            fontWeight: FontWeight.bold),
                       ),
                     )
-                  else if (model.selectedType == 'album')
-                      GridView.builder(
-                        shrinkWrap: true, // Prevents it from taking infinite height
-                        physics: const NeverScrollableScrollPhysics(), // Prevents nested scrolling
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 3 / 4,
-                        ),
-                        itemCount: model.results.length,
-                        itemBuilder: (context, index) {
-                          final album = model.results[index];
-                          return Card(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (album.imageUrl != null)
-                                  Image.network(
-                                    album.imageUrl!,
-                                    height: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  album.name,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2, // Limit to one line
-                                ),
-                                if (album.artist != null) Text(album.artist! ,overflow: TextOverflow.ellipsis,
-                                    maxLines: 1), // Limit to one line),
-                                if (album.year != null) Text(album.year!),
-                              ],
-                            ),
-                          );
-                        },
-                      )
-                    else
-                      ListView.builder(
-                        shrinkWrap: true, // Prevents it from taking infinite height
-                        physics: const NeverScrollableScrollPhysics(), // Prevents nested scrolling
-                        itemCount: model.results.length,
-                        itemBuilder: (context, index) {
-                          final artist = model.results[index];
-                          return ListTile(
-                            leading: artist.imageUrl != null
-                                ? Image.network(artist.imageUrl!, width: 50, height: 50)
-                                : const Icon(Icons.person),
-                            title: Text(artist.name),
-                          );
-                        },
+                  else if (model.selectedType == AppStrings.selectedTypeAlbum)
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 3 / 4,
                       ),
+                      itemCount: model.results.length,
+                      itemBuilder: (context, index) {
+                        final album = model.results[index];
+                        return Card(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (album.imageUrl != null)
+                                Image.network(
+                                  album.imageUrl!,
+                                  height: Dimens.imageHeight,
+                                  fit: BoxFit.cover,
+                                ),
+                              const SizedBox(height: Dimens.smallSpacing),
+                              Text(
+                                album.name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: Dimens.maxLineTwo,
+                              ),
+                              if (album.artist != null)
+                                Text(
+                                  album.artist!,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: Dimens.maxLineOne,
+                                ),
+                              if (album.year != null) Text(album.year!),
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: model.results.length,
+                      itemBuilder: (context, index) {
+                        final artist = model.results[index];
+                        return ListTile(
+                          leading: artist.imageUrl != null
+                              ? Image.network(artist.imageUrl!,
+                                  width: Dimens.artistImageWidthUrl,
+                                  height: Dimens.artistImageHeightUrl)
+                              : const Icon(Icons.person),
+                          title: Text(artist.name),
+                        );
+                      },
+                    ),
                 ],
               ),
             ),

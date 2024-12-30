@@ -8,26 +8,27 @@ class LoggerService {
   );
 
   // Log a message with different log levels
+  //debug
   void d(String message) {
     _logger.d(message);
   }
-
+//info
   void i(String message) {
     _logger.i(message);
   }
-
+//warning
   void w(String message) {
     _logger.w(message);
   }
-
+//error
   void e(String message) {
     _logger.e(message);
   }
-
+//verbose
   void v(String message) {
     _logger.v(message);
   }
-
+//wtf
   void wtf(String message) {
     _logger.wtf(message);
   }

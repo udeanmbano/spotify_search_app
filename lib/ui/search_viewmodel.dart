@@ -2,13 +2,15 @@ import 'package:stacked/stacked.dart';
 import '../models/search_result.dart';
 import '../services/spotify_api_service.dart';
 import '../services/logger_service.dart';
-import '../app/app.locator.dart'; // Locator for service injection
+import '../app/app.locator.dart';
+import '../shared/strings.dart'; // Locator for service injection
 
 class SearchViewModel extends BaseViewModel {
-  final SpotifyApiService _apiService = locator<SpotifyApiService>(); // Get from locator
+  final SpotifyApiService _apiService =
+      locator<SpotifyApiService>(); // Get from locator
   final LoggerService _logger = locator<LoggerService>(); // Get from locator
   List<SearchResult> results = [];
-  String _selectedType = 'album'; // 'album' or 'artist'
+  String _selectedType = AppStrings.selectedTypeAlbum; // 'album' or 'artist'
 
   String get selectedType => _selectedType;
 
@@ -19,7 +21,8 @@ class SearchViewModel extends BaseViewModel {
   }
 
   Future<void> search(String query) async {
-    _logger.i('Search initiated with query: $query and type: $_selectedType'); // Logging search initiation
+    _logger.i(
+        'Search initiated with query: $query and type: $_selectedType'); // Logging search initiation
     setBusy(true);
     try {
       final items = await _apiService.search(query, _selectedType);
@@ -32,7 +35,9 @@ class SearchViewModel extends BaseViewModel {
           name: item['name'],
           imageUrl: imageUrl,
           artist: _selectedType == 'album' ? item['artists'][0]['name'] : null,
-          year: _selectedType == 'album' ? item['release_date']?.split('-')[0] : null,
+          year: _selectedType == AppStrings.selectedTypeAlbum
+              ? item['release_date']?.split('-')[0]
+              : null,
         );
       }).toList();
     } catch (e) {

@@ -1,44 +1,70 @@
+import 'package:flutter_test/flutter_test.dart' as WidgetTest;
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:spotify_search_app/app/app.locator.dart';
+import 'package:spotify_search_app/services/logger_service.dart';
+import 'package:spotify_search_app/services/spotify_api_service.dart';
+import 'package:spotify_search_app/ui/search_viewmodel.dart';
+import 'package:test/test.dart';
 import 'dart:convert';
 
-import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
-import 'package:spotify_search_app/services/spotify_api_service.dart'; // Adjust this import according to your project structure
-import 'package:spotify_search_app/services/logger_service.dart'; // Adjust this import according to your project structure
-import 'package:spotify_search_app/ui/search_viewmodel.dart'; // Adjust this import according to your project structure
-import 'package:mockito/mockito.dart';
-import 'package:http/http.dart' as http;
-
-// Mock classes for SpotifyApiService and LoggerService
-class MockSpotifyApiService extends Mock implements SpotifyApiService {}
-class MockLoggerService extends Mock implements LoggerService {}
-// Correctly mock the http.Client class
-class MockHttpClient extends Mock implements http.Client {}
-
+// Generate Mocks for the required services
+@GenerateMocks([SpotifyApiService, LoggerService])
+import 'search_view_model_test.mocks.dart';
 void main() {
-  // Setup before each test
+  WidgetTest.TestWidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter framework is initialized
+
+  late SearchViewModel viewModel;
+  late MockSpotifyApiService mockApiService;
+  late MockLoggerService mockLoggerService;
+
   setUp(() {
-    // Registering mock services in GetIt
-    GetIt.I.registerSingleton<SpotifyApiService>(MockSpotifyApiService());
-    GetIt.I.registerSingleton<LoggerService>(MockLoggerService());
+    mockApiService = MockSpotifyApiService();
+    mockLoggerService = MockLoggerService();
+
+    // Register mocks
+    if (!locator.isRegistered<SpotifyApiService>()) {
+      locator.registerSingleton<SpotifyApiService>(mockApiService);
+    }
+    if (!locator.isRegistered<LoggerService>()) {
+      locator.registerSingleton<LoggerService>(mockLoggerService);
+    }
+
+    viewModel = SearchViewModel();
   });
 
-  // Cleanup after each test
   tearDown(() {
-    // Unregistering services to avoid memory leaks or state issues
-    GetIt.I.unregister<SpotifyApiService>();
-    GetIt.I.unregister<LoggerService>();
+    locator.reset();
   });
 
-  test('Test SearchViewModel setSelectedType', () async {
-    // Arrange: Initialize the view model
-    final searchViewModel = SearchViewModel();
+  group('SearchViewModel Tests', () {
+    test('should change selected type', () {
+      viewModel.setSelectedType('artist');
+      expect(viewModel.selectedType, 'artist');
+      verify(mockLoggerService.i('Selected type changed to artist')).called(1);
+    });
 
-    // Act: Set a new selected type
-    searchViewModel.setSelectedType('artist');
+    test('should perform search and populate results', () async {
+      final mockSearchResults = [
+        {'id': '1', 'name': 'Test Album', 'images': [], 'artists': [{'name': 'Artist Name'}], 'release_date': '2020-01-01'}
+      ];
 
-    // Assert: Check that selectedType was updated
-    expect(searchViewModel.selectedType, 'artist');
+      when(mockApiService.search(any, any)).thenAnswer((_) async => mockSearchResults);
+
+      await viewModel.search('test query');
+
+      expect(viewModel.results.length, 1);
+      expect(viewModel.results[0].name, 'Test Album');
+      verify(mockLoggerService.i('Search initiated with query: test query and type: album')).called(1);
+    });
+
+    test('should handle search failure gracefully', () async {
+      when(mockApiService.search(any, any)).thenThrow(Exception('Failed to fetch results'));
+
+      await viewModel.search('test query');
+
+      expect(viewModel.results.isEmpty, true);
+      verify(mockLoggerService.e('Search failed: Exception: Failed to fetch results')).called(1);
+    });
   });
-
-
 }
